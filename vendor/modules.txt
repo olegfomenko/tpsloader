@@ -1,0 +1,60 @@
+# github.com/davecgh/go-spew v1.1.1
+github.com/davecgh/go-spew/spew
+# github.com/go-chi/chi v4.0.3+incompatible
+github.com/go-chi/chi
+# github.com/go-errors/errors v0.0.0-20150906023321-a41850380601
+github.com/go-errors/errors
+# github.com/gorilla/schema v1.1.0
+github.com/gorilla/schema
+# github.com/konsorten/go-windows-terminal-sequences v1.0.1
+github.com/konsorten/go-windows-terminal-sequences
+# github.com/lib/pq v1.2.0
+github.com/lib/pq
+github.com/lib/pq/oid
+github.com/lib/pq/scram
+# github.com/manucorporat/sse v0.0.0-20160126180136-ee05b128a739
+github.com/manucorporat/sse
+# github.com/pkg/errors v0.8.1
+github.com/pkg/errors
+# github.com/pmezard/go-difflib v1.0.0
+github.com/pmezard/go-difflib/difflib
+# github.com/segmentio/go-loggly v0.5.1-0.20171222203950-eb91657e62b2
+github.com/segmentio/go-loggly
+# github.com/sirupsen/logrus v1.4.1
+github.com/sirupsen/logrus
+github.com/sirupsen/logrus/hooks/test
+# github.com/stellar/go v0.0.0-20210115195815-f22f80204d9d
+## explicit
+github.com/stellar/go/amount
+github.com/stellar/go/clients/horizonclient
+github.com/stellar/go/crc16
+github.com/stellar/go/hash
+github.com/stellar/go/keypair
+github.com/stellar/go/network
+github.com/stellar/go/price
+github.com/stellar/go/protocols/horizon
+github.com/stellar/go/protocols/horizon/base
+github.com/stellar/go/protocols/horizon/effects
+github.com/stellar/go/protocols/horizon/operations
+github.com/stellar/go/strkey
+github.com/stellar/go/support/clock
+github.com/stellar/go/support/errors
+github.com/stellar/go/support/http/httpdecode
+github.com/stellar/go/support/log
+github.com/stellar/go/support/render/hal
+github.com/stellar/go/support/render/httpjson
+github.com/stellar/go/support/render/problem
+github.com/stellar/go/support/url
+github.com/stellar/go/txnbuild
+github.com/stellar/go/xdr
+# github.com/stellar/go-xdr v0.0.0-20201028102745-f80a23dac78a
+github.com/stellar/go-xdr/xdr3
+# github.com/stretchr/objx v0.1.1
+github.com/stretchr/objx
+# github.com/stretchr/testify v1.5.1
+github.com/stretchr/testify/assert
+github.com/stretchr/testify/mock
+# golang.org/x/sys v0.0.0-20190606165138-5da285871e9c
+golang.org/x/sys/unix
+# gopkg.in/yaml.v2 v2.2.2
+gopkg.in/yaml.v2
