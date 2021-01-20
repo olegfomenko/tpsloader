@@ -1,4 +1,4 @@
-package account
+package operations
 
 import (
 	"github.com/olegfomenko/tpsloader/internal/utils"
@@ -18,7 +18,7 @@ func CreateAccount(creator *keypair.Full, client *horizonclient.Client) *keypair
 	}
 
 	result := utils.SendTransaction(creator, []txnbuild.Operation{&createAccountOp}, client)
-	log.Println("Create account transaction result:", result)
+	log.Println("Create operations transaction result:", result)
 
 	return creation
 }

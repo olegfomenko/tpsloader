@@ -21,7 +21,7 @@ func GetAccountDetail(keypair *keypair.Full, client *horizonclient.Client) *hori
 func SendTransaction(kp *keypair.Full, operations []txnbuild.Operation, client *horizonclient.Client) *horizon.Transaction {
 	signer := GetAccountDetail(kp, client)
 
-	// Creating transaction that holds create-account-operation
+	// Creating transaction that holds create-operations-operation
 	txParams := txnbuild.TransactionParams{
 		SourceAccount:        signer,
 		IncrementSequenceNum: true,

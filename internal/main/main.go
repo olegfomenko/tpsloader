@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/olegfomenko/tpsloader/internal/account"
+	"github.com/olegfomenko/tpsloader/internal/operations"
 	"github.com/stellar/go/clients/horizonclient"
 	"github.com/stellar/go/keypair"
 	"log"
@@ -17,5 +17,9 @@ func main() {
 	client := horizonclient.DefaultTestNetClient
 	client.HorizonURL = "http://localhost:8000/"
 
-	account.CreateAccount(admin, client)
+	// Creating new account
+	account := operations.CreateAccount(admin, client)
+
+	// Sending 10 lumens to created account
+	operations.SendPayment(admin, account, "10", client)
 }
