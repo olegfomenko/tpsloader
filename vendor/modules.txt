@@ -1,3 +1,5 @@
+# github.com/cpuguy83/go-md2man/v2 v2.0.0-20190314233015-f79a8a8ca69d
+github.com/cpuguy83/go-md2man/v2/md2man
 # github.com/davecgh/go-spew v1.1.1
 github.com/davecgh/go-spew/spew
 # github.com/go-chi/chi v4.0.3+incompatible
@@ -18,8 +20,12 @@ github.com/manucorporat/sse
 github.com/pkg/errors
 # github.com/pmezard/go-difflib v1.0.0
 github.com/pmezard/go-difflib/difflib
+# github.com/russross/blackfriday/v2 v2.0.1
+github.com/russross/blackfriday/v2
 # github.com/segmentio/go-loggly v0.5.1-0.20171222203950-eb91657e62b2
 github.com/segmentio/go-loggly
+# github.com/shurcooL/sanitized_anchor_name v1.0.0
+github.com/shurcooL/sanitized_anchor_name
 # github.com/sirupsen/logrus v1.4.1
 github.com/sirupsen/logrus
 github.com/sirupsen/logrus/hooks/test
@@ -54,7 +60,11 @@ github.com/stretchr/objx
 # github.com/stretchr/testify v1.5.1
 github.com/stretchr/testify/assert
 github.com/stretchr/testify/mock
+# github.com/urfave/cli v1.22.5
+## explicit
+github.com/urfave/cli
 # golang.org/x/sys v0.0.0-20190606165138-5da285871e9c
 golang.org/x/sys/unix
 # gopkg.in/yaml.v2 v2.2.2
+## explicit
 gopkg.in/yaml.v2

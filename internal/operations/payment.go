@@ -4,11 +4,12 @@ import (
 	"github.com/olegfomenko/tpsloader/internal/utils"
 	"github.com/stellar/go/clients/horizonclient"
 	"github.com/stellar/go/keypair"
+	"github.com/stellar/go/protocols/horizon"
 	"github.com/stellar/go/txnbuild"
 	"log"
 )
 
-func SendPayment(source keypair.Full, destination keypair.Full, amount string, client horizonclient.Client) {
+func SendPayment(source keypair.Full, destination keypair.Full, amount string, client horizonclient.Client) (horizon.Transaction, error) {
 	log.Println("Creating payment from:", source.Address(), "to:", destination.Address())
 
 	paymentOperation := txnbuild.Payment{
@@ -23,4 +24,6 @@ func SendPayment(source keypair.Full, destination keypair.Full, amount string, c
 	} else {
 		log.Println("Payment result:", result)
 	}
+
+	return result, err
 }

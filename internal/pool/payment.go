@@ -17,7 +17,7 @@ type PaymentTask struct {
 
 func (task *PaymentTask) Run(ch chan struct{}) {
 	for len(ch) == 0 {
-		log.Println("Starting create operation in task")
+		log.Println("Starting payment operation in task")
 
 		// Creating new transaction timestamp
 		timestamp := TransactionTimestamp{
@@ -26,13 +26,14 @@ func (task *PaymentTask) Run(ch chan struct{}) {
 		}
 
 		// Making transaction
-		operations.SendPayment(task.From, task.To, task.Amount, task.Client)
+		_, err := operations.SendPayment(task.From, task.To, task.Amount, task.Client)
 		task.From, task.To = task.To, task.From
 
-		// Checking results
-		// Updating timestamp
-		timestamp.Finish = time.Now()
-		timestamp.Status = true
-		Timestamps = append(Timestamps, timestamp)
+		if err == nil {
+			// Updating timestamp
+			timestamp.Finish = time.Now()
+			timestamp.Status = true
+			Timestamps = append(Timestamps, timestamp)
+		}
 	}
 }

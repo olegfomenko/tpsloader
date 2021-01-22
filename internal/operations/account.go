@@ -35,11 +35,11 @@ func generateKeypair() keypair.Full {
 	return *kp
 }
 
-func PrepareCreators(count int, admin keypair.Full, client horizonclient.Client) []keypair.Full {
+func PrepareAccounts(count int, amount string, admin keypair.Full, client horizonclient.Client) []keypair.Full {
 	var prepared []keypair.Full
 
 	for len(prepared) != count {
-		kp, err := CreateAccount(admin, "1000000", client)
+		kp, err := CreateAccount(admin, amount, client)
 
 		if err == nil {
 			prepared = append(prepared, kp)
