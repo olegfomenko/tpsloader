@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"github.com/olegfomenko/tpsloader/internal/config"
 	"github.com/stellar/go/clients/horizonclient"
 	"github.com/stellar/go/keypair"
 	"github.com/stellar/go/protocols/horizon"
@@ -20,6 +21,7 @@ func GetAccountDetail(keypair keypair.Full, client horizonclient.Client) horizon
 
 func SendTransaction(kp keypair.Full, operations []txnbuild.Operation, client horizonclient.Client) (horizon.Transaction, error) {
 	signer := GetAccountDetail(kp, client)
+	conf := config.GetConfig()
 
 	// Creating transaction that holds create-operations-operation
 	txParams := txnbuild.TransactionParams{
@@ -33,7 +35,7 @@ func SendTransaction(kp keypair.Full, operations []txnbuild.Operation, client ho
 	tx, _ := txnbuild.NewTransaction(txParams)
 
 	// Signing and encoding transaction
-	signedTx, _ := tx.Sign("Stellar Load Test Network", &kp)
+	signedTx, _ := tx.Sign(conf.Passphrase, &kp)
 
 	// Encoding transaction
 	txeBase64, _ := signedTx.Base64()

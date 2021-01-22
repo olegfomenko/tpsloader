@@ -16,7 +16,9 @@ For correct work and simplified configuration service uses pool of
 ``` yaml
 admin: SDR7XY33FYTDJTRF2CAXU5VGQWIQU4YOGZYPMYZ7ZAZTDGINQYMRJWZC
 
-horizon: http://horizon:8000/
+passphrase: Stellar Load Test Network
+
+horizon: http://host.docker.internal:8000/
 
 creators: ["SAN4NLOGBGWHNJADLOSWT4GBYKMP7ZMGE74NLMHHRFXL6PB45HVWLX3W", "SAMEBGASYZEAJZLTKMWFUE47ZMPNIP34WNHAEYN5TVF7DZQW3242XHKM", "SC4JZ3ML5KCJFY43L5YONXWUETHF6WNMCGQGM4VTP7G3SH6HEWCWWBQJ"]
 
@@ -30,6 +32,7 @@ duration: 600000
 ```
 
 - admin -> stellar network admin seed (for creating accounts)
+- passphrase -> core passphrase
 - horizon -> horizon microservice URL
 - creators -> array of "creators" (not required for auto-run startup)
 - payers -> map of "payers" (not required for auto-run startup)
@@ -63,4 +66,3 @@ Example:
 ```commandline
 ./tpsloader auto-run -n 500 -a1 100000 -p 500 -a2 200
 ``` 
-

@@ -2,8 +2,11 @@ package config
 
 import (
 	"gopkg.in/yaml.v2"
+	"log"
 	"os"
 )
+
+var configuration *Config = nil
 
 // NewConfig returns a new decoded Config struct
 func NewConfig(configPath string) (*Config, error) {
@@ -26,4 +29,17 @@ func NewConfig(configPath string) (*Config, error) {
 	}
 
 	return config, nil
+}
+
+func GetConfig() Config {
+	if configuration == nil {
+		conf, err := NewConfig("config.yml")
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		configuration = conf
+	}
+
+	return *configuration
 }

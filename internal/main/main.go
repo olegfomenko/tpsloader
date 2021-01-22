@@ -17,11 +17,7 @@ import (
 
 func main() {
 	// Reading config file
-	conf, err := config.NewConfig("config.yml")
-	if err != nil {
-		log.Fatal(err)
-	}
-
+	conf := config.GetConfig()
 	log.Println("Running with config:", conf)
 
 	admin, err := keypair.ParseFull(conf.AdminSeed)
@@ -59,7 +55,7 @@ func main() {
 			Name:  "run",
 			Usage: "Run load testing based on configured seeds",
 			Action: func(c *cli.Context) {
-				loadTesting(client, *conf)
+				loadTesting(client, conf)
 			},
 		},
 
@@ -100,7 +96,7 @@ func main() {
 				}
 
 				// Start testing
-				loadTesting(client, *conf)
+				loadTesting(client, conf)
 			},
 		},
 	}
@@ -108,6 +104,9 @@ func main() {
 	app.Run(os.Args)
 }
 
+// Main load testing function
+// Starts two pools with account creation and payment tasks
+// After executing (duration should be configured) service will calculate max tps
 func loadTesting(client horizonclient.Client, conf config.Config) {
 	accountPool := pool.GetPool("Create Account Pool")
 	paymentPool := pool.GetPool("Payment Pool")
@@ -133,6 +132,7 @@ func loadTesting(client horizonclient.Client, conf config.Config) {
 	log.Println("Failed transactions:", pool.Failed)
 }
 
+// Creating tasks using provided config creators list
 func getCreateAccountTasks(conf config.Config, client horizonclient.Client) []pool.Task {
 	var tasks []pool.Task
 	var index = 0
@@ -152,6 +152,7 @@ func getCreateAccountTasks(conf config.Config, client horizonclient.Client) []po
 	return tasks
 }
 
+// Creating tasks using provided config payers list
 func getPaymentTasks(conf config.Config, client horizonclient.Client) []pool.Task {
 	var tasks []pool.Task
 	var index = 0
@@ -174,6 +175,7 @@ func getPaymentTasks(conf config.Config, client horizonclient.Client) []pool.Tas
 	return tasks
 }
 
+// Parsing creators - getting keypair list from seed creators list
 func parseCreators(conf config.Config) []keypair.Full {
 	var creators []keypair.Full
 
@@ -185,6 +187,7 @@ func parseCreators(conf config.Config) []keypair.Full {
 	return creators
 }
 
+// Calculating max tps
 func getMaxTPS(delta time.Duration) float64 {
 	var maxTPS float64 = 0
 
