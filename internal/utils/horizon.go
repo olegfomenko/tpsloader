@@ -35,7 +35,11 @@ func SendTransaction(kp keypair.Full, operations []txnbuild.Operation, client ho
 	// Signing and encoding transaction
 	signedTx, _ := tx.Sign("Stellar Load Test Network", &kp)
 
+	// Encoding transaction
+	txeBase64, _ := signedTx.Base64()
+	// log.Println("Transaction base64: ", txeBase64)
+
 	// Submitting transaction ans print response
-	resp, err := client.SubmitTransaction(signedTx)
+	resp, err := client.SubmitTransactionXDR(txeBase64)
 	return resp, err
 }

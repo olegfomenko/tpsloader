@@ -28,6 +28,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	log.Println("Admin ID:", admin.Address())
 
 	client := *horizonclient.DefaultPublicNetClient
 	client.HorizonURL = conf.HorizonURL
