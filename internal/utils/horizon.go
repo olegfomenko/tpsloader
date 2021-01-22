@@ -7,7 +7,7 @@ import (
 	"github.com/stellar/go/txnbuild"
 )
 
-func GetAccountDetail(keypair *keypair.Full, client *horizonclient.Client) *horizon.Account {
+func GetAccountDetail(keypair keypair.Full, client horizonclient.Client) horizon.Account {
 	accountRequest := horizonclient.AccountRequest{AccountID: keypair.Address()}
 	adminDetail, err := client.AccountDetail(accountRequest)
 
@@ -15,15 +15,15 @@ func GetAccountDetail(keypair *keypair.Full, client *horizonclient.Client) *hori
 		panic(err)
 	}
 
-	return &adminDetail
+	return adminDetail
 }
 
-func SendTransaction(kp *keypair.Full, operations []txnbuild.Operation, client *horizonclient.Client) *horizon.Transaction {
+func SendTransaction(kp keypair.Full, operations []txnbuild.Operation, client horizonclient.Client) (horizon.Transaction, error) {
 	signer := GetAccountDetail(kp, client)
 
 	// Creating transaction that holds create-operations-operation
 	txParams := txnbuild.TransactionParams{
-		SourceAccount:        signer,
+		SourceAccount:        &signer,
 		IncrementSequenceNum: true,
 		Operations:           operations,
 		Timebounds:           txnbuild.NewInfiniteTimeout(),
@@ -33,14 +33,9 @@ func SendTransaction(kp *keypair.Full, operations []txnbuild.Operation, client *
 	tx, _ := txnbuild.NewTransaction(txParams)
 
 	// Signing and encoding transaction
-	signedTx, _ := tx.Sign("Stellar Load Test Network", kp)
+	signedTx, _ := tx.Sign("Stellar Load Test Network", &kp)
 
 	// Submitting transaction ans print response
 	resp, err := client.SubmitTransaction(signedTx)
-
-	if err != nil {
-		panic(err)
-	}
-
-	return &resp
+	return resp, err
 }

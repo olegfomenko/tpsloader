@@ -8,7 +8,7 @@ import (
 	"log"
 )
 
-func SendPayment(source *keypair.Full, destination *keypair.Full, amount string, client *horizonclient.Client) {
+func SendPayment(source keypair.Full, destination keypair.Full, amount string, client horizonclient.Client) {
 	log.Println("Creating payment from:", source.Address(), "to:", destination.Address())
 
 	paymentOperation := txnbuild.Payment{
@@ -17,6 +17,10 @@ func SendPayment(source *keypair.Full, destination *keypair.Full, amount string,
 		Asset:       txnbuild.NativeAsset{},
 	}
 
-	result := utils.SendTransaction(source, []txnbuild.Operation{&paymentOperation}, client)
-	log.Println("Payment result:", result)
+	result, err := utils.SendTransaction(source, []txnbuild.Operation{&paymentOperation}, client)
+	if err != nil {
+		log.Println("Gon an error while payment operation:", err)
+	} else {
+		log.Println("Payment result:", result)
+	}
 }
