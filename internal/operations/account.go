@@ -67,7 +67,7 @@ func PrepareAccounts(count int, amount string, admin keypair.Full, client horizo
 		_, err := utils.SendTransaction(admin, operations, client)
 
 		if err != nil {
-			log.Println("Error while preparing creator accounts:", err)
+			log.Println("Error while preparing creator accounts:", err.(*horizonclient.Error), err.(*horizonclient.Error).Problem)
 		} else {
 			log.Println("Successful created", currentCnt, "accounts")
 			// Adding created keypairs to result

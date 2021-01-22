@@ -3,67 +3,62 @@ package pool
 import (
 	"context"
 	"log"
-	"sync"
 	"time"
 )
 
 var (
-	index      = workerIndex{index: 0}
-	Timestamps []TransactionTimestamp
+	Timestamps []time.Time
 	Successful = 0
 	Failed     = 0
 )
 
-type TransactionTimestamp struct {
-	Start  time.Time
-	Finish time.Time
-	Status bool
-}
-
-type workerIndex struct {
-	mu    sync.Mutex
-	index int
-}
-
-func getNextId() int {
-	index.mu.Lock()
-	defer index.mu.Unlock()
-
-	index.index++
-	return index.index
-}
-
 type Task interface {
-	Run(ch chan struct{})
+	Run(ctx context.Context, ready chan Task)
+	GetName() string
 }
 
 type Pool interface {
 	Submit(ctx context.Context, task ...Task)
-	startTask(ctx context.Context, task Task)
+	GetName() string
 }
 
-type PoolImpl struct{}
+type poolImpl struct {
+	name string
+}
 
-func (pool *PoolImpl) startTask(ctx context.Context, task Task) {
-	taskId := getNextId()
-	log.Println("Starting task #", taskId)
+func (pool *poolImpl) Submit(ctx context.Context, tasks ...Task) {
+	log.Println("Starting", pool.name)
+	ready := make(chan Task, len(tasks))
 
-	ch := make(chan struct{}, 1)
-	go task.Run(ch)
-
-	select {
-	case <-ctx.Done():
-		log.Println("Context finished. Finishing task #", taskId)
-		ch <- struct{}{}
-	case <-ch:
-		log.Println("Task #", taskId, "finished himself")
+	for _, task := range tasks {
+		ready <- task
 	}
 
-	log.Println("Task #", taskId, "finished!")
+	context, cancel := context.WithCancel(ctx)
+	defer cancel()
+
+	inProgress := true
+
+	for inProgress {
+		select {
+		case task := <-ready:
+			log.Println("Running task:", task.GetName())
+			go task.Run(context, ready)
+		case <-ctx.Done():
+			log.Println("Main context closed. Closing pool:", pool.name)
+			inProgress = false
+		}
+	}
+
+	log.Println("Pool", pool.name, "finished")
 }
 
-func (pool *PoolImpl) Submit(ctx context.Context, tasks ...Task) {
-	for _, task := range tasks {
-		go pool.startTask(ctx, task)
+func (pool *poolImpl) GetName() string {
+	return pool.name
+}
+
+func GetPool(name string) Pool {
+	return &poolImpl{
+		name: name,
 	}
 }

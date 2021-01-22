@@ -1,6 +1,7 @@
 package pool
 
 import (
+	"context"
 	"github.com/olegfomenko/tpsloader/internal/operations"
 	"github.com/stellar/go/clients/horizonclient"
 	"github.com/stellar/go/keypair"
@@ -8,41 +9,37 @@ import (
 	"time"
 )
 
-var (
-	CreatedAccounts []keypair.Full
-)
-
 type AccountTask struct {
 	Creator keypair.Full
 	Client  horizonclient.Client
+	Name    string
 }
 
-func (task *AccountTask) Run(ch chan struct{}) {
-	for len(ch) == 0 {
-		log.Println("Starting create operation in task")
+func (task *AccountTask) Run(ctx context.Context, ready chan Task) {
+	log.Println("Processing CreateAccount Task:", task.Name)
 
-		// Creating new transaction timestamp
-		timestamp := TransactionTimestamp{
-			Start:  time.Now(),
-			Status: false,
-		}
+	// Making transaction
+	_, err := operations.CreateAccount(task.Creator, "100", task.Client)
 
-		// Making transaction
-		kp, err := operations.CreateAccount(task.Creator, "100", task.Client)
-
-		// Checking results
-		if err != nil {
-			log.Println("Task got an error:", err.(*horizonclient.Error))
-			Failed++
-		} else {
-			// Updating timestamp
-			timestamp.Finish = time.Now()
-			timestamp.Status = true
-
-			Timestamps = append(Timestamps, timestamp)
-			CreatedAccounts = append(CreatedAccounts, kp)
-
-			Successful++
-		}
+	// Checking results
+	if err != nil {
+		log.Println("Task", task.Name, "got an error:", err.(*horizonclient.Error), err.(*horizonclient.Error).Problem)
+		Failed++
+	} else {
+		// Updating information
+		log.Println("Successful finishing CreateAccount Task:", task.Name)
+		Timestamps = append(Timestamps, time.Now())
+		Successful++
 	}
+
+	select {
+	case <-ctx.Done():
+		log.Println("Context finished. Task", task.Name, "will not be ready")
+	case ready <- task:
+		log.Println("CreateAccount Task", task.Name, "is ready")
+	}
+}
+
+func (task *AccountTask) GetName() string {
+	return task.Name
 }

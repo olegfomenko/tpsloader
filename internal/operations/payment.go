@@ -19,9 +19,7 @@ func SendPayment(source keypair.Full, destination keypair.Full, amount string, c
 	}
 
 	result, err := utils.SendTransaction(source, []txnbuild.Operation{&paymentOperation}, client)
-	if err != nil {
-		log.Println("Gon an error while payment operation:", err)
-	} else {
+	if err == nil {
 		log.Println("Payment successful!")
 	}
 

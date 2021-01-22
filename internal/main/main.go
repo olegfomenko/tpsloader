@@ -11,6 +11,7 @@ import (
 	"github.com/urfave/cli"
 	"log"
 	"os"
+	"strconv"
 	"time"
 )
 
@@ -107,33 +108,17 @@ func main() {
 }
 
 func loadTesting(client horizonclient.Client, conf config.Config) {
-	creators := parseCreators(conf)
+	accountPool := pool.GetPool("Create Account Pool")
+	paymentPool := pool.GetPool("Payment Pool")
+
+	accountTasks := getCreateAccountTasks(conf, client)
+	paymentTasks := getPaymentTasks(conf, client)
 
 	log.Println("Creating context with timeout", time.Duration(conf.Duration)*time.Millisecond)
 	ctx, _ := context.WithTimeout(context.TODO(), time.Duration(conf.Duration)*time.Millisecond)
 
-	pl := pool.PoolImpl{}
-
-	// Starting creators
-	for _, creator := range creators {
-		pl.Submit(ctx, &pool.AccountTask{
-			Creator: creator,
-			Client:  client,
-		})
-	}
-
-	// Starting Payers
-	for k, v := range conf.Payers {
-		from, _ := keypair.ParseFull(k)
-		to, _ := keypair.ParseFull(v)
-
-		pl.Submit(ctx, &pool.PaymentTask{
-			From:   *from,
-			To:     *to,
-			Amount: conf.Amount,
-			Client: client,
-		})
-	}
+	go accountPool.Submit(ctx, accountTasks...)
+	go paymentPool.Submit(ctx, paymentTasks...)
 
 	<-ctx.Done()
 
@@ -147,15 +132,52 @@ func loadTesting(client horizonclient.Client, conf config.Config) {
 	log.Println("Failed transactions:", pool.Failed)
 }
 
+func getCreateAccountTasks(conf config.Config, client horizonclient.Client) []pool.Task {
+	var tasks []pool.Task
+	var index = 0
+
+	creators := parseCreators(conf)
+
+	for _, creator := range creators {
+		tasks = append(tasks, &pool.AccountTask{
+			Creator: creator,
+			Client:  client,
+			Name:    "CreateAccount #" + strconv.Itoa(index),
+		})
+
+		index++
+	}
+
+	return tasks
+}
+
+func getPaymentTasks(conf config.Config, client horizonclient.Client) []pool.Task {
+	var tasks []pool.Task
+	var index = 0
+
+	for k, v := range conf.Payers {
+		from, _ := keypair.ParseFull(k)
+		to, _ := keypair.ParseFull(v)
+
+		tasks = append(tasks, &pool.PaymentTask{
+			From:   *from,
+			To:     *to,
+			Amount: conf.Amount,
+			Client: client,
+			Name:   "Payment #" + strconv.Itoa(index),
+		})
+
+		index++
+	}
+
+	return tasks
+}
+
 func parseCreators(conf config.Config) []keypair.Full {
 	var creators []keypair.Full
 
 	for _, c := range conf.Creators {
-		kp, err := keypair.ParseFull(c)
-		if err != nil {
-			log.Fatal(err)
-		}
-
+		kp, _ := keypair.ParseFull(c)
 		creators = append(creators, *kp)
 	}
 
@@ -167,13 +189,13 @@ func getMaxTPS(delta time.Duration) float64 {
 
 	for l, r := 0, 0; l < len(pool.Timestamps); l++ {
 		for ; r+1 < len(pool.Timestamps); r++ {
-			if delta < pool.Timestamps[r+1].Finish.Sub(pool.Timestamps[l].Finish) {
+			if delta < pool.Timestamps[r+1].Sub(pool.Timestamps[l]) {
 				break
 			}
 		}
 
 		log.Println("Checking", l, "...", r)
-		var curTPS float64 = float64(time.Second) * float64(r-l+1) / float64(delta)
+		var curTPS = float64(time.Second) * float64(r-l+1) / float64(delta)
 		log.Println("[", l, "...", r, "] TPS is", curTPS)
 
 		if curTPS > maxTPS {

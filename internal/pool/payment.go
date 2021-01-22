@@ -1,6 +1,7 @@
 package pool
 
 import (
+	"context"
 	"github.com/olegfomenko/tpsloader/internal/operations"
 	"github.com/stellar/go/clients/horizonclient"
 	"github.com/stellar/go/keypair"
@@ -13,31 +14,35 @@ type PaymentTask struct {
 	To     keypair.Full
 	Amount string
 	Client horizonclient.Client
+	Name   string
 }
 
-func (task *PaymentTask) Run(ch chan struct{}) {
-	for len(ch) == 0 {
-		log.Println("Starting payment operation in task")
+func (task *PaymentTask) Run(ctx context.Context, ready chan Task) {
+	log.Println("Processing Payment Task:", task.Name)
 
-		// Creating new transaction timestamp
-		timestamp := TransactionTimestamp{
-			Start:  time.Now(),
-			Status: false,
-		}
+	// Making transaction
+	_, err := operations.SendPayment(task.From, task.To, task.Amount, task.Client)
 
-		// Making transaction
-		_, err := operations.SendPayment(task.From, task.To, task.Amount, task.Client)
-		task.From, task.To = task.To, task.From
+	// Swapping accounts
+	task.From, task.To = task.To, task.From
 
-		if err == nil {
-			// Updating timestamp
-			timestamp.Finish = time.Now()
-			timestamp.Status = true
-			Timestamps = append(Timestamps, timestamp)
-
-			Successful++
-		} else {
-			Failed++
-		}
+	if err == nil {
+		// Updating information
+		Timestamps = append(Timestamps, time.Now())
+		Successful++
+	} else {
+		log.Println("Task", task.Name, "got an error:", err.(*horizonclient.Error), err.(*horizonclient.Error).Problem)
+		Failed++
 	}
+
+	select {
+	case <-ctx.Done():
+		log.Println("Context finished. Task", task.Name, "will not be ready")
+	case ready <- task:
+		log.Println("Payment Task", task.Name, "is ready")
+	}
+}
+
+func (task *PaymentTask) GetName() string {
+	return task.Name
 }
