@@ -10,7 +10,6 @@ import (
 	"github.com/stellar/go/keypair"
 	"github.com/urfave/cli"
 	"log"
-	"net/http"
 	"os"
 	"time"
 )
@@ -29,10 +28,8 @@ func main() {
 		log.Fatal(err)
 	}
 
-	client := horizonclient.Client{
-		HorizonURL: conf.HorizonURL,
-		HTTP:       http.DefaultClient,
-	}
+	client := *horizonclient.DefaultPublicNetClient
+	client.HorizonURL = conf.HorizonURL
 
 	app := cli.NewApp()
 
@@ -144,7 +141,10 @@ func loadTesting(client horizonclient.Client, conf config.Config) {
 		fmt.Println(tx)
 	}
 
-	log.Println("MAC TPS IS", getMaxTPS(time.Minute))
+	log.Println("MAX TPS", getMaxTPS(time.Minute))
+
+	log.Println("Successful transactions:", pool.Successful)
+	log.Println("Failed transactions:", pool.Failed)
 }
 
 func parseCreators(conf config.Config) []keypair.Full {

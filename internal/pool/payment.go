@@ -34,6 +34,10 @@ func (task *PaymentTask) Run(ch chan struct{}) {
 			timestamp.Finish = time.Now()
 			timestamp.Status = true
 			Timestamps = append(Timestamps, timestamp)
+
+			Successful++
+		} else {
+			Failed++
 		}
 	}
 }

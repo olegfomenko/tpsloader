@@ -10,6 +10,8 @@ import (
 var (
 	index      = workerIndex{index: 0}
 	Timestamps []TransactionTimestamp
+	Successful = 0
+	Failed     = 0
 )
 
 type TransactionTimestamp struct {

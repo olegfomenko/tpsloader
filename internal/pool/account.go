@@ -33,6 +33,7 @@ func (task *AccountTask) Run(ch chan struct{}) {
 		// Checking results
 		if err != nil {
 			log.Println("Task got an error:", err.(*horizonclient.Error))
+			Failed++
 		} else {
 			// Updating timestamp
 			timestamp.Finish = time.Now()
@@ -40,6 +41,8 @@ func (task *AccountTask) Run(ch chan struct{}) {
 
 			Timestamps = append(Timestamps, timestamp)
 			CreatedAccounts = append(CreatedAccounts, kp)
+
+			Successful++
 		}
 	}
 }

@@ -22,7 +22,7 @@ func SendPayment(source keypair.Full, destination keypair.Full, amount string, c
 	if err != nil {
 		log.Println("Gon an error while payment operation:", err)
 	} else {
-		log.Println("Payment result:", result)
+		log.Println("Payment successful!")
 	}
 
 	return result, err
